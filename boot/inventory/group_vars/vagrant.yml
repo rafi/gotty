@@ -1,0 +1,7 @@
+---
+
+# Ansible options
+# ---
+ansible_user: vagrant
+ansible_host: localhost
+ansible_port: 2222
