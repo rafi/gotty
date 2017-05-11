@@ -1,0 +1,12 @@
+---
+
+- name: Deploy GoTTY
+  hosts: all
+  tasks:
+    - name: Ensure go local directory
+      file:
+        state=directory
+        path=/home/vagrant/go/src/github.com/yudai/gotty
+
+    - name: Ensure build deps packages
+      command: 'GOPATH=/home/vagrant/go go install -v github.com/yudai/gotty'

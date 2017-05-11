@@ -1,0 +1,38 @@
+---
+
+- name: Bootstrapping machines
+  hosts: all
+  become: true
+  tags: base
+  tasks:
+    - name: Update apt keys
+      command: apt-key update
+
+    - name: Update apt cache (1h intervals)
+      apt: update_cache=yes
+        cache_valid_time=3600
+
+    - name: Ensure dependencies
+      apt: name={{ item }}
+      with_items:
+        - tzdata
+        - ntp
+        - ntpdate
+        - cron
+        - ufw
+        - git
+        - mercurial
+        - golang-go
+
+    - name: ensure base services started and enabled
+      service: name={{ item }} state=started enabled=yes
+      with_items:
+        - ntp
+        - cron
+
+    - name: Set the locale
+      locale_gen: name={{ locale }}
+
+    - name: Ensure timezone {{ timezone }}
+      timezone: name={{ timezone }}
+      tags: timezone
