@@ -1,0 +1,29 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+Vagrant.configure(2) do |config|
+
+  config.vm.box = "ubuntu/trusty64"
+  config.vm.hostname = "gotty-vagrant"
+  config.vm.define :"gotty-vagrant"
+  config.vm.provider "virtualbox" do |vb|
+    vb.name = "gotty-vagrant"
+    vb.memory = "1024"
+  end
+
+  config.ssh.forward_agent = true
+  config.vm.network "forwarded_port", guest: 8080, host: 8080
+  config.vm.synced_folder "../", "/home/vagrant/go/src/github.com/yudai/gotty", type: 'nfs'
+
+  config.vm.provision "provision", type:"ansible" do |ansible|
+    ansible.playbook = "playbooks/provision.yml"
+    ansible.inventory_path = "inventory"
+    ansible.limit = "vagrant"
+  end
+
+  config.vm.provision "deploy", type: "ansible" do |ansible|
+    ansible.playbook = "playbooks/deploy.yml"
+    ansible.inventory_path = "inventory"
+    ansible.limit = "vagrant"
+  end
+end
